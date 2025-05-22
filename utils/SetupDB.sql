@@ -1,0 +1,2 @@
+CREATE DATABASE eglem CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE TABLE eglem.product_history (id int NOT NULL AUTO_INCREMENT, sku varchar(100), id_eglem int(11), quantity varchar(11), price float(7,2), timestamp datetime NOT NULL DEFAULT CURRENT_TIMESTAMP, status varchar(100), jobuuid varchar(100), PRIMARY KEY (id));

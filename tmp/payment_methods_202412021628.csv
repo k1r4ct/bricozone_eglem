@@ -1,0 +1,6 @@
+"id_metodo_pagamento","metodo_pagamento"
+1,paypal
+3,scalapay
+4,bonifico
+5,contrassegno
+6,mybank
