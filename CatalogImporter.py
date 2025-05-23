@@ -11,7 +11,6 @@ from lib.helper.DatabaseMappingConnectionConfig import EglemTestDbHelper
 from lib.helper.MagentoAttributeHelper import MagentoAttributeHelper
 from lib.helper.CatalogImporterConfigHelper import config
 
-# Initialize logging
 logging.basicConfig(
     filename=config('LOGGING_FILE', default='create_attributes.log'), 
     level=config('LOGGING_LEVEL', default='INFO'),
@@ -51,15 +50,7 @@ class AttributeCreator:
         
         print(f"Found {len(attributes)} attributes to process")
         self.stats['total_attributes'] = len(attributes)
-        
-        # # Show some examples
-        # print("\nSample attributes found:")
-        # for i, attr in enumerate(attributes[:5]):
-        #     print(f"  {i+1}. {attr['original_code']} -> '{attr['normalized_code']}' (Label: {attr['label']})")
-        
-        # if len(attributes) > 5:
-        #     print(f"  ... and {len(attributes) - 5} more attributes")
-        
+
         return attributes
     
     def create_attributes_in_magento(self, attributes):

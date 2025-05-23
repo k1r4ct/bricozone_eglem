@@ -33,10 +33,9 @@ class ZangooConnector(SQLHelper):
             List[str]: List of category paths
         """
         try:
-            connection = options["connection"] if options["connection"] else ZangooDbHelper.getConnection()
+            connection = options["connection"] if options["connection"] else ZangooConnector.getConnection()
             cursor = connection.cursor()
             
-            # Query provided by the user to retrieve category paths
             select_query = """
                 SELECT CONCAT_WS('/',
                     cat0.nome,
@@ -61,12 +60,11 @@ class ZangooConnector(SQLHelper):
             for row in results:
                 path = row[0]
                 if path and path.strip():
-                    # Clean the path by removing multiple slashes and trailing slash
                     clean_path = '/'.join([segment.strip() for segment in path.split('/') if segment.strip()])
                     if clean_path:
                         category_paths.append(clean_path)
             
-            logging.info(f"Retrieved {len(category_paths)} category paths from Zangoo")
+            logging.info(f"Retrieved {len(category_paths)} category paths from Zangoo local database")
             return category_paths
             
         except Exception as ex:
@@ -75,7 +73,7 @@ class ZangooConnector(SQLHelper):
         
         finally:
             if options["close"]:
-                ZangooDbHelper.connectionClose(connection)
+                ZangooConnector.connectionClose(connection)
 
     @staticmethod
     def testConnection():
@@ -86,12 +84,12 @@ class ZangooConnector(SQLHelper):
             bool: True if the connection was successful
         """
         try:
-            connection = ZangooDbHelper.getConnection()
+            connection = ZangooConnector.getConnection()
             if connection and connection.is_connected():
                 cursor = connection.cursor()
                 cursor.execute("SELECT COUNT(*) FROM categorie")
                 count = cursor.fetchone()[0]
-                ZangooDbHelper.connectionClose(connection)
+                ZangooConnector.connectionClose(connection)
                 logging.info(f"Connection to Zangoo successful. Found {count} categories in the table.")
                 return True
         except Exception as ex:
@@ -109,7 +107,7 @@ class ZangooConnector(SQLHelper):
             int: Number of categories
         """
         try:
-            connection = options["connection"] if options["connection"] else ZangooDbHelper.getConnection()
+            connection = options["connection"] if options["connection"] else ZangooConnector.getConnection()
             cursor = connection.cursor()
             
             cursor.execute("SELECT COUNT(*) FROM categorie")
@@ -123,4 +121,4 @@ class ZangooConnector(SQLHelper):
         
         finally:
             if options["close"]:
-                ZangooDbHelper.connectionClose(connection)
+                ZangooConnector.connectionClose(connection)

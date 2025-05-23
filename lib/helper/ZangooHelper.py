@@ -3,7 +3,7 @@ import logging
 from lib.helper.SQLHelper import SQLHelper
 from lib.helper.CatalogImporterConfigHelper import config
 
-class ZangooDbHelper(SQLHelper):
+class ZangooHelper(SQLHelper):
     """
     Helper to manage operations on the Zangoo database
     """
@@ -33,7 +33,7 @@ class ZangooDbHelper(SQLHelper):
             List[str]: List of category paths
         """
         try:
-            connection = options["connection"] if options["connection"] else ZangooDbHelper.getConnection()
+            connection = options["connection"] if options["connection"] else ZangooHelper.getConnection()
             cursor = connection.cursor()
             
             # Query provided by the user to retrieve category paths
@@ -75,7 +75,7 @@ class ZangooDbHelper(SQLHelper):
         
         finally:
             if options["close"]:
-                ZangooDbHelper.connectionClose(connection)
+                ZangooHelper.connectionClose(connection)
 
     @staticmethod
     def testConnection():
@@ -86,12 +86,12 @@ class ZangooDbHelper(SQLHelper):
             bool: True if the connection was successful
         """
         try:
-            connection = ZangooDbHelper.getConnection()
+            connection = ZangooHelper.getConnection()
             if connection and connection.is_connected():
                 cursor = connection.cursor()
                 cursor.execute("SELECT COUNT(*) FROM categorie")
                 count = cursor.fetchone()[0]
-                ZangooDbHelper.connectionClose(connection)
+                ZangooHelper.connectionClose(connection)
                 logging.info(f"Connection to Zangoo successful. Found {count} categories in the table.")
                 return True
         except Exception as ex:
@@ -109,7 +109,7 @@ class ZangooDbHelper(SQLHelper):
             int: Number of categories
         """
         try:
-            connection = options["connection"] if options["connection"] else ZangooDbHelper.getConnection()
+            connection = options["connection"] if options["connection"] else ZangooHelper.getConnection()
             cursor = connection.cursor()
             
             cursor.execute("SELECT COUNT(*) FROM categorie")
@@ -123,4 +123,4 @@ class ZangooDbHelper(SQLHelper):
         
         finally:
             if options["close"]:
-                ZangooDbHelper.connectionClose(connection)
+                ZangooHelper.connectionClose(connection)

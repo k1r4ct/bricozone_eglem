@@ -5,7 +5,7 @@ from decouple import config
 import logging
 from lib.helper.SQLHelper import SQLHelper
 
-class MagentoRepository:
+class MagentoConnector:
     """
     Repository for basic connectivity with Magento (API and Database)
     """
@@ -26,7 +26,7 @@ class MagentoRepository:
         return {
             "Accept": "application/json",
             "Content-Type": "application/json",
-            "Authorization": f"Bearer {MagentoConnectionRepository._getToken(options)}"
+            "Authorization": f"Bearer {MagentoConnector._getToken(options)}"
         }
 
     # === API Calls ===
@@ -37,8 +37,8 @@ class MagentoRepository:
         """
         return requests.request(
             method.upper(),
-            f"{MagentoConnectionRepository._getHost()}{urlPath}",
-            headers=MagentoConnectionRepository._getHeaders(options),
+            f"{MagentoConnector._getHost()}{urlPath}",
+            headers=MagentoConnector._getHeaders(options),
             params=data if method.lower() == 'get' else None,
             json=data if method.lower() != 'get' else None,
         )
@@ -48,7 +48,7 @@ class MagentoRepository:
         """
         Executes GET API
         """
-        response = MagentoConnectionRepository.apiCall("GET", endpoint, None, options)
+        response = MagentoConnector.apiCall("GET", endpoint, None, options)
         return response.json() if response.status_code == 200 else None
 
     @staticmethod
@@ -56,7 +56,7 @@ class MagentoRepository:
         """
         Executes POST API
         """
-        response = MagentoConnectionRepository.apiCall("POST", endpoint, data, options)
+        response = MagentoConnector.apiCall("POST", endpoint, data, options)
         return response.json() if response.status_code in [200, 201] else None
 
     @staticmethod
@@ -64,7 +64,7 @@ class MagentoRepository:
         """
         Executes PUT API
         """
-        response = MagentoConnectionRepository.apiCall("PUT", endpoint, data, options)
+        response = MagentoConnector.apiCall("PUT", endpoint, data, options)
         return response.json() if response.status_code == 200 else None
 
     # === Database Connection ===
@@ -94,7 +94,7 @@ class MagentoRepository:
         Executes query on Magento database
         """
         try:
-            connection = options["connection"] if options["connection"] else MagentoConnectionRepository.getDbConnection()
+            connection = options["connection"] if options["connection"] else MagentoConnector.getDbConnection()
             cursor = connection.cursor()
             
             if params:
@@ -114,4 +114,4 @@ class MagentoRepository:
             return None
         finally:
             if options["close"]:
-                MagentoConnectionRepository.closeDbConnection(connection)
+                MagentoConnector.closeDbConnection(connection)

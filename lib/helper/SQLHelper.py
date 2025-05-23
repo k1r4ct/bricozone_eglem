@@ -2,6 +2,7 @@ import mysql.connector
 from decouple import config
 import logging
 
+#Deprecated
 class SQLHelper():
 
     def getConnection(host, port, database, user, password):

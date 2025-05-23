@@ -3,69 +3,13 @@ import json
 import mysql.connector
 from decouple import config
 import logging
-from lib.helper.SQLHelper import SQLHelper
+#from lib.helper.SQLHelper import SQLHelper
+from lib.connector.SQLConnector import SQLConnector
 
 class MagentoRepository:
     """
-    Repository for basic connectivity with Magento (API and Database)
+    Repository for connectivity with Magento (API and Database)
     """
-
-    # === API Configuration ===
-    @staticmethod
-    def _getHost():
-        return config('MAGENTO_HOST')
-
-    @staticmethod
-    def _getToken(options={"externalToken": False, "accessToken": None}):
-        if options.get("externalToken"):
-            return options.get("accessToken")
-        return config('MAGENTO_TOKEN')
-
-    @staticmethod
-    def _getHeaders(options={"externalToken": False, "accessToken": None}):
-        return {
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {MagentoConnectionRepository._getToken(options)}"
-        }
-
-    # === API Calls ===
-    @staticmethod
-    def apiCall(method, urlPath, data=None, options={"externalToken": False, "accessToken": None}):
-        """
-        Executes generic API call to Magento
-        """
-        return requests.request(
-            method.upper(),
-            f"{MagentoConnectionRepository._getHost()}{urlPath}",
-            headers=MagentoConnectionRepository._getHeaders(options),
-            params=data if method.lower() == 'get' else None,
-            json=data if method.lower() != 'get' else None,
-        )
-
-    @staticmethod
-    def apiGet(endpoint, options={"externalToken": False, "accessToken": None}):
-        """
-        Executes GET API
-        """
-        response = MagentoConnectionRepository.apiCall("GET", endpoint, None, options)
-        return response.json() if response.status_code == 200 else None
-
-    @staticmethod
-    def apiPost(endpoint, data, options={"externalToken": False, "accessToken": None}):
-        """
-        Executes POST API
-        """
-        response = MagentoConnectionRepository.apiCall("POST", endpoint, data, options)
-        return response.json() if response.status_code in [200, 201] else None
-
-    @staticmethod
-    def apiPut(endpoint, data, options={"externalToken": False, "accessToken": None}):
-        """
-        Executes PUT API
-        """
-        response = MagentoConnectionRepository.apiCall("PUT", endpoint, data, options)
-        return response.json() if response.status_code == 200 else None
 
     # === Database Connection ===
     @staticmethod
@@ -73,7 +17,7 @@ class MagentoRepository:
         """
         Gets connection to Magento database
         """
-        return SQLHelper.getConnection(
+        return SQLConnector(
             config('MAGENTO_DB_HOST'), 
             config('MAGENTO_DB_PORT', cast=int), 
             config('MAGENTO_DB_DATABASE'), 
@@ -86,32 +30,13 @@ class MagentoRepository:
         """
         Closes database connection
         """
-        return SQLHelper.connectionClose(connection)
+        return SQLConnector.close(connection)
 
+    #TO EVALUATE
     @staticmethod
     def executeQuery(query, params=None, options={"connection": None, "close": True}):
         """
         Executes query on Magento database
         """
-        try:
-            connection = options["connection"] if options["connection"] else MagentoConnectionRepository.getDbConnection()
-            cursor = connection.cursor()
-            
-            if params:
-                cursor.execute(query, params)
-            else:
-                cursor.execute(query)
-            
-            result = cursor.fetchall()
-            
-            if not options["connection"]:
-                connection.commit()
-            
-            return result
-            
-        except Exception as ex:
-            logging.error(f"Error executing query: {str(ex)}")
-            return None
-        finally:
-            if options["close"]:
-                MagentoConnectionRepository.closeDbConnection(connection)
+
+        return SQLConnector.executeQuery(query, params, options)

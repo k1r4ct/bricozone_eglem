@@ -33,7 +33,7 @@ class ZangooRepository(SQLHelper):
             List[str]: List of category paths
         """
         try:
-            connection = options["connection"] if options["connection"] else ZangooDbHelper.getConnection()
+            connection = options["connection"] if options["connection"] else ZangooHelper.getConnection()
             cursor = connection.cursor()
             
             # Query provided by the user to retrieve category paths
@@ -75,7 +75,7 @@ class ZangooRepository(SQLHelper):
         
         finally:
             if options["close"]:
-                ZangooDbHelper.connectionClose(connection)
+                ZangooHelper.connectionClose(connection)
 
     @staticmethod
     def testConnection():
@@ -86,12 +86,12 @@ class ZangooRepository(SQLHelper):
             bool: True if the connection was successful
         """
         try:
-            connection = ZangooDbHelper.getConnection()
+            connection = ZangooHelper.getConnection()
             if connection and connection.is_connected():
                 cursor = connection.cursor()
                 cursor.execute("SELECT COUNT(*) FROM categorie")
                 count = cursor.fetchone()[0]
-                ZangooDbHelper.connectionClose(connection)
+                ZangooHelper.connectionClose(connection)
                 logging.info(f"Connection to Zangoo successful. Found {count} categories in the table.")
                 return True
         except Exception as ex:
@@ -109,7 +109,7 @@ class ZangooRepository(SQLHelper):
             int: Number of categories
         """
         try:
-            connection = options["connection"] if options["connection"] else ZangooDbHelper.getConnection()
+            connection = options["connection"] if options["connection"] else ZangooHelper.getConnection()
             cursor = connection.cursor()
             
             cursor.execute("SELECT COUNT(*) FROM categorie")
@@ -123,4 +123,4 @@ class ZangooRepository(SQLHelper):
         
         finally:
             if options["close"]:
-                ZangooDbHelper.connectionClose(connection)
+                ZangooHelper.connectionClose(connection)
